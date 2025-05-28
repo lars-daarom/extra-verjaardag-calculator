@@ -5,7 +5,7 @@ User-agent: *
 Allow: /
 
 # Verwijs naar de sitemap
-Sitemap: https://[jouw-username].github.io/extra-verjaardag-calculator/sitemap.xml
+Sitemap: https://lars-daarom.github.io/extra-verjaardag-calculator/sitemap.xml
 
 # Blokkeer geen enkele pagina
 Disallow:
