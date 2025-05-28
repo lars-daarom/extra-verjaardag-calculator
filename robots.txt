@@ -1,0 +1,14 @@
+# Robots.txt voor Extra Verjaardag Calculator
+# Staat alle zoekmachines toe om de site te indexeren
+
+User-agent: *
+Allow: /
+
+# Verwijs naar de sitemap
+Sitemap: https://[jouw-username].github.io/extra-verjaardag-calculator/sitemap.xml
+
+# Blokkeer geen enkele pagina
+Disallow:
+
+# Crawl-delay voor bots die dit respecteren (optioneel)
+# Crawl-delay: 1
