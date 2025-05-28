@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extra Verjaardag Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f8f8;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
+            border-radius: 15px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            display: none;
+        }
+
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+
+        .result h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+
+        .date-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: #764ba2;
+            text-align: center;
+            margin: 20px 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            color: #555;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .days-until {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 1.1em;
+            color: #666;
+        }
+
+        .celebration {
+            font-size: 3em;
+            text-align: center;
+            margin: 20px 0;
+            animation: bounce 1s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Extra Verjaardag Calculator</h1>
+        <p class="subtitle">Ontdek je speciale tweede verjaardag!</p>
+        
+        <form id="birthdayForm">
+            <div class="form-group">
+                <label for="name">Jouw naam:</label>
+                <input type="text" id="name" required placeholder="Vul je naam in...">
+            </div>
+            
+            <div class="form-group">
+                <label for="birthdate">Je geboortedatum:</label>
+                <input type="date" id="birthdate" required>
+            </div>
+            
+            <button type="submit">Bereken mijn extra verjaardag!</button>
+        </form>
+        
+        <div id="result" class="result">
+            <h2>Je extra verjaardag is:</h2>
+            <div class="celebration">🎂</div>
+            <div class="date-display" id="extraBirthday"></div>
+            <div class="days-until" id="daysUntil"></div>
+            <div class="explanation">
+                Dit is jouw unieke extra verjaardag! Het algoritme heeft op basis van je naam en geboortedatum deze speciale datum voor je berekend. Deze datum blijft altijd hetzelfde voor jou.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateExtraBirthday(name, birthdate) {
+            // Maak een hash van de naam en geboortedatum
+            let hash = 0;
+            const combinedString = name.toLowerCase() + birthdate.toISOString();
+            
+            for (let i = 0; i < combinedString.length; i++) {
+                const char = combinedString.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32-bit integer
+            }
+            
+            // Maak hash positief
+            hash = Math.abs(hash);
+            
+            // Bereken de dag van het jaar (1-365)
+            // We gebruiken modulo 182 en tellen daar 183 bij op
+            // Dit zorgt ervoor dat de extra verjaardag altijd minstens een half jaar van de originele verjaardag af ligt
+            const birthDayOfYear = getDayOfYear(birthdate);
+            const offset = (hash % 182) + 183;
+            let extraDayOfYear = (birthDayOfYear + offset) % 365;
+            
+            // Als het 0 wordt, maak er dag 365 van
+            if (extraDayOfYear === 0) extraDayOfYear = 365;
+            
+            // Converteer terug naar een datum (gebruik huidig jaar)
+            const currentYear = new Date().getFullYear();
+            const extraBirthday = dayOfYearToDate(extraDayOfYear, currentYear);
+            
+            return extraBirthday;
+        }
+        
+        function getDayOfYear(date) {
+            const start = new Date(date.getFullYear(), 0, 0);
+            const diff = date - start;
+            const oneDay = 1000 * 60 * 60 * 24;
+            return Math.floor(diff / oneDay);
+        }
+        
+        function dayOfYearToDate(dayOfYear, year) {
+            const date = new Date(year, 0); // 1 januari
+            date.setDate(dayOfYear);
+            return date;
+        }
+        
+        function formatDate(date) {
+            const months = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 
+                          'juli', 'augustus', 'september', 'oktober', 'november', 'december'];
+            return `${date.getDate()} ${months[date.getMonth()]}`;
+        }
+        
+        function calculateDaysUntil(date) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            let targetDate = new Date(date);
+            targetDate.setFullYear(today.getFullYear());
+            targetDate.setHours(0, 0, 0, 0);
+            
+            // Als de datum al geweest is dit jaar, neem volgend jaar
+            if (targetDate < today) {
+                targetDate.setFullYear(today.getFullYear() + 1);
+            }
+            
+            const diffTime = targetDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            return diffDays;
+        }
+        
+        document.getElementById('birthdayForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value.trim();
+            const birthdateValue = document.getElementById('birthdate').value;
+            
+            // Validatie
+            if (!name) {
+                alert('Vul alsjeblieft je naam in!');
+                return;
+            }
+            
+            if (!birthdateValue) {
+                alert('Vul alsjeblieft je geboortedatum in!');
+                return;
+            }
+            
+            const birthdate = new Date(birthdateValue + 'T00:00:00');
+            
+            // Check of datum geldig is
+            if (isNaN(birthdate.getTime())) {
+                alert('Vul alsjeblieft een geldige datum in!');
+                return;
+            }
+            
+            const extraBirthday = calculateExtraBirthday(name, birthdate);
+            const daysUntil = calculateDaysUntil(extraBirthday);
+            
+            document.getElementById('extraBirthday').textContent = formatDate(extraBirthday);
+            
+            if (daysUntil === 0) {
+                document.getElementById('daysUntil').textContent = '🎉 Dat is vandaag! Gefeliciteerd! 🎉';
+            } else if (daysUntil === 1) {
+                document.getElementById('daysUntil').textContent = 'Nog 1 dag te gaan!';
+            } else {
+                document.getElementById('daysUntil').textContent = `Nog ${daysUntil} dagen te gaan!`;
+            }
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.classList.add('show');
+            
+            // Scroll naar resultaat
+            setTimeout(() => {
+                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        });
+    </script>
+</body>
+</html>
